@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>NPTEL Practice Portal</title>
+<style>
+:root{--bg:#0b0f1a;--card:#141b2d;--ink:#e6ecff;--mut:#8b96b8;--acc:#7cf5c8;--acc2:#7aa2ff;--bad:#ff7a93;--line:#2c3d66}
+*{box-sizing:border-box}
+body{margin:0;font-family:system-ui,-apple-system,Segoe UI,sans-serif;background:radial-gradient(circle at 20% 0,#1d2a55,transparent 45%),var(--bg);color:var(--ink);min-height:100vh;padding:12px 16px 40px}
+header{display:flex;justify-content:space-between;align-items:center;padding:10px 0;flex-wrap:wrap;gap:8px}
+h1{font-size:20px;margin:0}
+h1 span{color:var(--acc)}
+h3{margin:16px 0 6px}
+.card{background:var(--card);border:1px solid #22304f;border-radius:16px;padding:16px;margin:12px 0}
+input{width:100%;padding:10px;border-radius:10px;border:1px solid var(--line);background:#0e1424;color:var(--ink);margin:6px 0 10px;font:inherit}
+button{background:linear-gradient(90deg,var(--acc),var(--acc2));color:#06101f;border:0;padding:10px 16px;border-radius:10px;font-weight:700;cursor:pointer;margin:4px 6px 4px 0}
+button.ghost{background:none;color:var(--ink);border:1px solid var(--line)}
+.row{display:flex;gap:8px;flex-wrap:wrap}
+.row>*{flex:1;min-width:140px}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px}
+.stat{background:#0e1424;border:1px solid var(--line);border-radius:12px;padding:12px;text-align:center}
+.stat b{font-size:22px;display:block;color:var(--acc)}
+.tag{display:inline-block;padding:3px 10px;border-radius:99px;font-size:12px;background:#1f2a48;color:var(--mut);margin-left:6px}
+.live{background:#123d33;color:var(--acc)}
+.muted{color:var(--mut);font-size:14px}
+.scn{border-left:3px solid var(--acc2);padding:4px 12px;margin:22px 0 8px;white-space:pre-wrap;line-height:1.5}
+.opt{display:block;padding:9px 12px;border:1px solid var(--line);border-radius:10px;margin:6px 0;cursor:pointer}
+.opt input{width:auto;margin:0 8px 0 0}
+.bar{position:sticky;top:0;background:var(--bg);padding:10px 0;display:flex;justify-content:space-between;align-items:center;z-index:2}
+table{width:100%;border-collapse:collapse;font-size:14px}
+td,th{padding:7px;border-bottom:1px solid #22304f;text-align:left}
+.good{color:var(--acc)}.bad{color:var(--bad)}
+
+.menu{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;padding:10px 12px;border:1px solid var(--line);border-radius:14px;background:var(--card);margin:10px 0;position:sticky;top:0;z-index:5}
+.menu a{color:var(--acc);text-decoration:none;padding:7px 10px;border-radius:8px}
+.menu a:hover{background:#263452}
+.week-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(105px,1fr));gap:6px}
+.nav-questions{display:flex;gap:6px;flex-wrap:wrap}
+.nav-questions a{display:inline-block;padding:7px 10px;border-radius:8px;border:1px solid var(--line);color:var(--acc);text-decoration:none}
+body.light{--bg:#f2f5fb;--card:#ffffff;--ink:#172033;--mut:#58647b;--line:#d1d9e8;background:var(--bg);color:var(--ink)}
+body.light input{background:#fff;color:#172033}
+body.light .stat{background:#f7f9fd}
+body.light .menu{background:#fff}
+</style>
+</head>
+<body>
+<header><h1>NPTEL <span>Practice</span> Portal</h1><button class="ghost" id="logout" style="display:none" onclick="logout()">Logout</button></header>
+<main id="app"></main>
+<script>
+/* ============ QUESTION BANK (built in) ============
+   Each scenario has its sub-questions. answers = correct option numbers, starting from 0. */
+const BANK=[
+{week:1,scenario:"Programming Beyond Coding",text:`Riya, a first-year Economics student, thinks programming is unnecessary because apps already exist for almost every task. Her professor explains that existing software can always be enhanced, customized or automated. Programming helps people in every field automate repetitive tasks, analyze data and build custom solutions. Different languages evolved for different problems: FORTRAN for scientific computing, COBOL for business, C for efficiency, C++ for object-oriented programming and Python for accessibility. In a gesture activity, students learn to read combinations of hand signals, just as a programmer gives precise instructions with symbols a computer understands. Riya realizes programming is a problem-solving skill useful in almost any profession.`,questions:[
+{q:"Which statement best captures the professor's reason for learning programming despite the availability of many applications?",options:["Existing applications eliminate the need for programmers.","Programming enables people to create, improve, and customize solutions beyond existing applications.","Programming is useful only for developing mobile apps.","Learning programming is compulsory for every profession."],answers:[1]},
+{q:"According to the professor, why have multiple programming languages evolved over time?",options:["Each country develops its own programming language.","Different languages were designed to solve different types of problems and improve programming.","Older programming languages cannot run on modern computers.","Every programmer must create a new programming language."],answers:[1]},
+{q:"What was the primary purpose of the hand-gesture classroom activity?",options:["To improve students' memory.","To demonstrate that programming involves giving clear instructions using agreed-upon symbols.","To teach sign language.","To measure students' reaction speed."],answers:[1]},
+{q:"According to the professor, what is the most effective way to become proficient in programming?",options:["Memorize every programming language before writing code.","Begin with advanced programming problems.","Practice regularly, stay motivated, and learn gradually through small steps.","Depend entirely on modern programming tools and IDEs."],answers:[2]},
+{q:"Which conclusion would Riya most likely draw after attending the session?",options:["Programming is a problem-solving skill that can benefit people across many disciplines.","Programming is valuable only for software engineers.","Programming is primarily about memorizing the syntax of different languages.","Existing software packages make programming unnecessary."],answers:[0]}
+]},
+{week:1,scenario:"Teaching a Robot Efficiently: The Power of Loops",text:`A robotics club programs a robot to move forward and return, with each round a little farther than the last. One student writes a separate instruction for every movement. Another student notices the pattern repeats and suggests a loop with a variable that stores the current distance, increased by a fixed amount after every round. The instructor adds a second variable for the starting distance so the same program works for different challenges. The students learn that loops make programs flexible, easier to maintain and less error-prone.`,questions:[
+{q:"Why did the second student recommend using a loop instead of writing every movement instruction separately?",options:["Loops allow repeated actions to be expressed with fewer instructions while preserving the same behavior.","Loops make the robot move faster.","Loops reduce the distance travelled by the robot.","Loops automatically correct programming errors."],answers:[0]},
+{q:"In the improved program, what is the primary purpose of using a variable for the travel distance?",options:["To store the robot's battery level.","To allow the distance to change automatically after each repetition.","To count how many students are programming.","To increase the robot's speed."],answers:[1]},
+{q:"The instructor replaces the fixed starting distance with another variable. What is the main advantage?",options:["The robot no longer requires a loop.","The same program can easily be reused for different starting distances without rewriting the logic.","The program will execute only once.","Variables automatically make the program run faster."],answers:[1]},
+{q:"Suppose a student removes the statement that updates the distance variable inside the loop. Which outcome is most likely?",options:["The robot will continue repeating the same movement distance in every round.","The robot will stop after the first movement.","The robot will automatically choose new distances.","The loop will immediately terminate."],answers:[0]},
+{q:"Which statement best summarizes the role of loops in programming?",options:["Loops are useful only for mathematical calculations.","Loops replace the need for variables.","Loops help automate repetitive tasks and make programs easier to modify and maintain.","Loops should be avoided because they make programs difficult to understand."],answers:[2]}
+]},
+{week:1,scenario:"Understanding a Scratch Program",text:`A student learning Scratch runs a sprite that starts at its initial position and executes these blocks once, from top to bottom:
+1. move 5 steps
+2. turn 15 degrees
+3. move 5 steps
+4. point in direction 90°
+5. move 10 steps`,questions:[
+{q:"Which Scratch block determines the direction of the sprite before its final movement of 10 steps?",options:["move 5 steps (first block)","turn 15 degrees","move 5 steps (third block)","point in direction 90°"],answers:[3]},
+{q:"What is the purpose of the turn 15 degrees block in this program?",options:["It changes the sprite's direction before the second movement.","It changes the sprite's position by 15 steps.","It changes the direction for the entire program, including after the point in direction block.","It makes the sprite move automatically."],answers:[0]},
+{q:"Suppose the point in direction 90° block is removed while all other blocks stay unchanged. Which statement is most likely true?",options:["The final movement will continue in the direction established by the earlier turn.","The sprite will not execute the last move.","The sprite will return to its starting position.","The program will stop with an error."],answers:[0]},
+{q:"Which Scratch blocks in the program only change the sprite's position and never its direction?",options:["the two move 5 blocks","all three move blocks","turn and point","move 10 and point"],answers:[1]},
+{q:"A student accidentally swaps the turn 15 degrees block and the point in direction 90° block. What is the most likely effect?",options:["The sprite will follow exactly the same path.","The final movement will occur after turning 15° from 90°, producing a different path.","The sprite will not execute the second movement.","The program will become an infinite loop."],answers:[1]}
+]},
+{week:1,scenario:"Evaluating a Scratch-Based Game Scoring System",text:`A Scratch game sets score = 12, counter = 0 and bonus = 10. It then repeats 6 times: change score by 5; change counter by 1; if counter mod 2 = 0 then change bonus by 3, else change bonus by 1. After the loop, change score by bonus. Finally, the game shows "Excellent!" if the score is 50 or more, "Level Cleared!" if it is 40 or more, and "Try Again!" otherwise.`,questions:[
+{q:"Why does the program use the expression counter mod 2 = 0?",options:["To check whether the current round number is even.","To stop the repeat loop after two iterations.","To calculate the total score.","To reset the bonus variable."],answers:[0]},
+{q:"Which variable is updated in every iteration of the repeat loop, regardless of the if-else outcome?",options:["bonus","counter","score","Both score and counter"],answers:[3]},
+{q:"What is the purpose of the statement change score by bonus placed after the repeat loop?",options:["It resets the score before displaying the final message.","It adds the total bonus accumulated during all iterations to the final score.","It increases the bonus by the current score.","It determines how many times the loop executes."],answers:[1]},
+{q:"Suppose change score by bonus is moved inside the repeat loop, before the if condition. What is the most likely effect?",options:["The final score would become much larger because the bonus would be added repeatedly.","The final score would remain unchanged.","The bonus variable would always become zero.","The repeat loop would execute fewer times."],answers:[0]},
+{q:"Which statement best describes how the program decides which message to display?",options:["The message depends only on the value of counter.","The message depends only on the value of bonus.","The program first computes the final score and then checks the score against the conditions in order.","All three messages are displayed one after another."],answers:[2]}
+]},
+{week:1,scenario:"Coding Scenario: Trace the Loop Line by Line",text:`A student must predict the output of this Python program. Read the numbered lines in execution order:\nLine 1: total = 0\nLine 2: for number in range(1, 4):\nLine 3:     total = total + number\nLine 4: print(total)\nExecution order: Line 1 runs first, Line 2 starts the loop, Line 3 updates total for each value, and Line 4 prints after the loop.`,questions:[
+{q:"What is printed by Line 4?",options:["3","6","123","0"],answers:[1]},
+{q:"Which line repeats for each value in the loop?",options:["Line 1","Line 2 only","Line 3 inside the loop","Line 4"],answers:[2]},
+{q:"What is the value of total immediately before Line 4 runs?",options:["3","4","6","7"],answers:[2]},
+{q:"If Line 3 is indented incorrectly so it is outside the loop, what is the main issue?",options:["The total will not accumulate during each iteration.","The program will always print 6.","The loop will become infinite.","Line 1 will not run."],answers:[0]},
+{q:"Which line displays the final answer to the screen?",options:["Line 1","Line 2","Line 3","Line 4"],answers:[3]},
+{q:"Select all statements that describe the loop in this program.",options:["Line 2 repeats the loop body for each number.","Line 4 is inside the loop body.","Line 3 updates the running total.","Line 1 prints the answer."],answers:[0,2]}
+]},
+{week:2,scenario:"Coding Scenario: Find Even Numbers",text:`A student writes a program to print even numbers from 2 to 6:\nLine 1: for n in range(2, 7):\nLine 2:     if n % 2 == 0:\nLine 3:         print(n)\nLine 1 visits values 2, 3, 4, 5, 6 in order. Line 2 checks each value. Line 3 prints only values that pass the condition.`,questions:[
+{q:"What is the output?",options:["2 3 4 5 6","2 4 6","3 5","2 4"],answers:[1]},
+{q:"What does Line 2 check?",options:["Whether n is odd","Whether n is divisible by 2","Whether n is greater than 2","Whether n equals 6"],answers:[1]},
+{q:"Which line is executed only when the condition is true?",options:["Line 1","Line 2","Line 3","No line"],answers:[2]},
+{q:"What does the % operator return in this condition?",options:["Quotient","Remainder","Power","String length"],answers:[1]},
+{q:"If range(2, 7) is changed to range(2, 6), which even number is no longer checked?",options:["2","4","6","None"],answers:[2]}
+]},
+{week:3,scenario:"Coding Scenario: Function and Return Value",text:`A program calculates the square of a number:\nLine 1: def square(x):\nLine 2:     result = x * x\nLine 3:     return result\nLine 4: answer = square(5)\nLine 5: print(answer)\nThe function is defined first, then called with 5. The returned value is stored and printed.`,questions:[
+{q:"What is printed by Line 5?",options:["10","25","5","Error because return is missing"],answers:[1]},
+{q:"Which line defines the function?",options:["Line 1","Line 2","Line 4","Line 5"],answers:[0]},
+{q:"What is the purpose of Line 3?",options:["Display result","Send the calculated value back to the caller","Repeat the function","Read input"],answers:[1]},
+{q:"When does the function body execute?",options:["When Line 1 is read only","When square(5) is called at Line 4","After Line 5","Never"],answers:[1]},
+{q:"If x is 3, what value does the function return?",options:["6","9","3","0"],answers:[1]}
+]},
+{week:4,scenario:"Coding Scenario: List Indexing",text:`A student traces a list program:\nLine 1: values = [10, 20, 30, 40]\nLine 2: values[1] = 25\nLine 3: values.append(50)\nLine 4: print(values[1])\nLine 5: print(len(values))\nPython list indexing starts at zero. Line 2 updates the second item, and Line 3 adds one item at the end.`,questions:[
+{q:"What does Line 4 print?",options:["10","20","25","30"],answers:[2]},
+{q:"What does Line 5 print?",options:["4","5","50","25"],answers:[1]},
+{q:"Which line adds a new item to the list?",options:["Line 1","Line 2","Line 3","Line 4"],answers:[2]},
+{q:"Which index refers to the first item?",options:["0","1","2","-2"],answers:[0]},
+{q:"What is the list after Line 3?",options:["[10, 25, 30, 40]","[10, 20, 30, 40, 50]","[10, 25, 30, 40, 50]","[25, 10, 30, 40, 50]"],answers:[2]}
+]},
+{week:5,scenario:"Coding Scenario: String Processing",text:`A student studies this code:\nLine 1: word = "python"\nLine 2: first = word[0]\nLine 3: last = word[-1]\nLine 4: print(first, last)\nLine 2 reads the first character and Line 3 reads the last character using a negative index.`,questions:[
+{q:"What does Line 4 display?",options:["p n","y o","p p","python"],answers:[0]},
+{q:"What does index -1 select?",options:["First character","Last character","Second character","Entire string"],answers:[1]},
+{q:"Which data type is word?",options:["Integer","List","String","Boolean"],answers:[2]},
+{q:"What happens if word[6] is accessed for this string?",options:["It returns n","It returns an empty string","An index error occurs","It returns p"],answers:[2]},
+{q:"Which line selects the first character?",options:["Line 1","Line 2","Line 3","Line 4"],answers:[1]}
+]},
+{week:6,scenario:"Coding Scenario: Dictionary Lookup",text:`A program stores student marks:\nLine 1: marks = {"Anu": 80, "Bala": 75}\nLine 2: marks["Anu"] = 90\nLine 3: marks["Ciya"] = 85\nLine 4: print(marks["Anu"])\nLine 5: print(len(marks))\nDictionary keys identify values. Updating an existing key does not create a new key; adding a new key does.`,questions:[
+{q:"What is printed by Line 4?",options:["80","90","75","85"],answers:[1]},
+{q:"What is printed by Line 5?",options:["2","3","4","90"],answers:[1]},
+{q:"Which line updates an existing entry?",options:["Line 1","Line 2","Line 3","Line 5"],answers:[1]},
+{q:"What is used to look up a dictionary value?",options:["Only list index","A key","A loop counter","A file name"],answers:[1]},
+{q:"Does Line 3 replace Anu's mark?",options:["Yes","No, it adds a different key","It deletes the dictionary","It causes an error"],answers:[1]}
+]},
+{week:7,scenario:"Coding Scenario: File Handling",text:`A student reads a text file:\nLine 1: with open("notes.txt", "r") as file:\nLine 2:     content = file.read()\nLine 3: print(content)\nThe file must exist in the expected location. The with statement closes the file automatically after the block.`,questions:[
+{q:"What is the purpose of mode 'r' in Line 1?",options:["Read the file","Rename the file","Remove the file","Write new content"],answers:[0]},
+{q:"Which line reads the file content?",options:["Line 1","Line 2","Line 3","No line"],answers:[1]},
+{q:"What is an advantage of using with open(...)?",options:["It automatically closes the file when the block ends","It always creates a missing file","It encrypts the file","It prevents reading"],answers:[0]},
+{q:"What may happen if notes.txt does not exist?",options:["It prints zero","A file-not-found error may occur","It creates the file in read mode","It prints the filename"],answers:[1]},
+{q:"Which line displays the content?",options:["Line 1","Line 2","Line 3","All lines equally"],answers:[2]}
+]},
+{week:8,scenario:"Coding Scenario: Exception Handling",text:`A safe conversion program:\nLine 1: try:\nLine 2:     number = int(input())\nLine 3:     print(number * 2)\nLine 4: except ValueError:\nLine 5:     print("Invalid input")\nThe try block attempts conversion. If the entered text cannot be converted to an integer, the except block handles the ValueError.`,questions:[
+{q:"If the user enters 4, what is printed?",options:["4","8","Invalid input","ValueError"],answers:[1]},
+{q:"If the user enters 'hello', which block handles the conversion error?",options:["try block only","except block","Line 3 only","No block"],answers:[1]},
+{q:"Which line attempts integer conversion?",options:["Line 1","Line 2","Line 4","Line 5"],answers:[1]},
+{q:"Why is exception handling useful here?",options:["It handles an expected conversion failure gracefully","It makes every input valid","It removes the need for input","It doubles all strings"],answers:[0]},
+{q:"What type of exception is named on Line 4?",options:["TypeError","IndexError","ValueError","NameError"],answers:[2]}
+]},
+{week:9,scenario:"Coding Scenario: Nested Loop Output",text:`Trace this nested loop carefully:\nLine 1: for row in range(1, 3):\nLine 2:     for col in range(1, 3):\nLine 3:         print(row, col)\nThe inner loop completes for each value of row. Output order follows the outer loop first and inner loop second.`,questions:[
+{q:"How many lines are printed?",options:["2","3","4","6"],answers:[2]},
+{q:"What is printed first?",options:["1 1","1 2","2 1","2 2"],answers:[0]},
+{q:"What is printed third?",options:["1 1","1 2","2 1","2 2"],answers:[2]},
+{q:"How many times does the inner loop run for each outer-loop value?",options:["1","2","3","4"],answers:[1]},
+{q:"Which line contains the print statement?",options:["Line 1","Line 2","Line 3","None"],answers:[2]}
+]},
+{week:10,scenario:"Coding Scenario: Boolean Conditions",text:`A program checks eligibility:\nLine 1: age = 19\nLine 2: has_id = True\nLine 3: if age >= 18 and has_id:\nLine 4:     print("Eligible")\nLine 5: else:\nLine 6:     print("Not eligible")\nThe and operator requires both conditions to be true.`,questions:[
+{q:"What is printed?",options:["Eligible","Not eligible","True","19"],answers:[0]},
+{q:"For the if condition to be true, what must happen?",options:["Either condition may be true","Both conditions must be true","Both conditions must be false","Only age matters"],answers:[1]},
+{q:"If has_id becomes False, what is printed?",options:["Eligible","Not eligible","False","No output"],answers:[1]},
+{q:"Which operator combines the two conditions?",options:["or","not","and","in"],answers:[2]},
+{q:"Which line prints the fallback message?",options:["Line 3","Line 4","Line 5","Line 6"],answers:[3]}
+]},
+{week:11,scenario:"Coding Scenario: Count Words",text:`A student counts items in a list:\nLine 1: words = ["cloud", "code", "test"]\nLine 2: count = 0\nLine 3: for item in words:\nLine 4:     count += 1\nLine 5: print(count)\nLine 4 increments count once for every item.`,questions:[
+{q:"What is printed?",options:["0","2","3","4"],answers:[2]},
+{q:"How many times does Line 4 execute?",options:["Once","Twice","Three times","Four times"],answers:[2]},
+{q:"What is the initial value of count?",options:["0","1","3","None"],answers:[0]},
+{q:"Which line starts iterating through the list?",options:["Line 1","Line 2","Line 3","Line 5"],answers:[2]},
+{q:"If one item is added to words, what will be printed?",options:["2","3","4","5"],answers:[2]}
+]},
+{week:12,scenario:"Coding Scenario: Sort and Search",text:`A program sorts a list before checking membership:\nLine 1: nums = [4, 1, 3]\nLine 2: nums.sort()\nLine 3: target = 3\nLine 4: if target in nums:\nLine 5:     print("Found")\nLine 6: else:\nLine 7:     print("Missing")\nThe sort method changes the list order. The in operator checks whether target is present.`,questions:[
+{q:"What is printed?",options:["Found","Missing","[4, 1, 3]","3"],answers:[0]},
+{q:"What is nums after Line 2?",options:["[4, 1, 3]","[1, 3, 4]","[3, 1, 4]","[1, 4, 3]"],answers:[1]},
+{q:"What does the in operator check?",options:["Whether a value is present in a collection","Whether a list is sorted","Whether a number is even","Whether a file exists"],answers:[0]},
+{q:"Which line performs sorting?",options:["Line 1","Line 2","Line 4","Line 7"],answers:[1]},
+{q:"If target is changed to 9, what is printed?",options:["Found","Missing","9","Error"],answers:[1]}
+]}
+];
+
+/* ============ STORAGE ============ */
+const K={students:'npp_students',admin:'npp_admin',tests:'npp_tests',session:'npp_session',results:'npp_results'};
+const app=document.getElementById('app');
+let att=null;
+function load(k){try{return JSON.parse(localStorage.getItem(k))}catch(e){return null}}
+function save(k,v){localStorage.setItem(k,JSON.stringify(v))}
+function val(id){return document.getElementById(id).value.trim()}
+function esc(s){return String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]))}
+function fmt(iso){return iso?new Date(iso).toLocaleString():'Never'}
+function students(){return load(K.students)||{}}
+async function hash(s){const d=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(s));return [...new Uint8Array(d)].map(x=>x.toString(16).padStart(2,'0')).join('')}
+function bankCount(){return BANK.reduce((a,s)=>a+s.questions.length,0)}
+
+function render(){
+  const s=load(K.session);
+  document.getElementById('logout').style.display=s?'inline-block':'none';
+  if(!s)return loginView('student');
+  if(s.role==='admin')return adminView();
+  studentView(s.id);
+}
+function logout(){localStorage.removeItem(K.session);render()}
+function toggleTheme(){document.body.classList.toggle('light');save('npp_theme',document.body.classList.contains('light')?'light':'dark')}
+function showMistakes(){
+ const s=load(K.session);if(!s||s.role!=='student')return;
+ const rs=(load(K.results)||[]).filter(r=>r.rollno===s.id);
+ const qs=rs.flatMap(r=>(r.review||[]).filter(q=>!q.isCorrect).map(q=>({...q,title:r.title})));
+ app.innerHTML=`<nav class="menu"><b>🧠 Mistake Questions</b><button class="ghost" onclick="render()">Back to dashboard</button></nav><p class="muted">Questions answered incorrectly or left unanswered, with the correct answer for revision.</p>${qs.length?qs.map((q,i)=>`<div class="card"><b>${i+1}. ${esc(q.q)}</b><p class="muted">${esc(q.title)} · Week ${q.week}</p><p><b>Correct answer:</b> ${q.correctAnswers.map(n=>esc(q.options[n])).join(', ')}</p></div>`).join(''):'<div class="card">Great! No mistakes recorded yet.</div>'}`;
+}
+
+/* ============ LOGIN ============ */
+function loginView(tab){
+  const admin=load(K.admin);
+  const tabs=`<div class="row"><button class="${tab==='student'?'':'ghost'}" onclick="loginView('student')">Student</button><button class="${tab==='admin'?'':'ghost'}" onclick="loginView('admin')">Admin</button></div>`;
+  let body;
+  if(tab==='student'){
+    body=`<h3>Student login or register</h3>
+    <input id="sr" placeholder="Roll number"><input id="sn" placeholder="Full name (new account only)">
+    <input id="sp" type="password" placeholder="Password (6+ characters)">
+    <button onclick="studentLogin()">Login</button><button class="ghost" onclick="studentRegister()">Register</button>`;
+  }else if(admin){
+    body=`<h3>Admin login</h3><p class="muted">Username: SURENDHAR</p>
+    <input id="ap" type="password" placeholder="Admin password"><button onclick="adminLogin()">Enter</button>`;
+  }else{
+    body=`<h3>Create admin password (first time only)</h3><p class="muted">Username is SURENDHAR. Use at least 8 characters.</p>
+    <input id="ap" type="password" placeholder="New admin password"><input id="ap2" type="password" placeholder="Repeat password">
+    <button onclick="adminSetup()">Create admin</button>`;
+  }
+  app.innerHTML=`<div class="card">${tabs}${body}</div>`;
+}
+async function studentRegister(){
+  const r=val('sr'),n=val('sn'),p=val('sp');
+  if(!r||!n||p.length<6)return alert('Enter roll number, name and a password of 6+ characters.');
+  const db=students();
+  if(db[r])return alert('This roll number is already registered. Please login.');
+  db[r]={name:n,hash:await hash(p),joined:new Date().toISOString(),lastLogin:new Date().toISOString()};
+  save(K.students,db);save(K.session,{role:'student',id:r});render();
+}
+async function studentLogin(){
+  const r=val('sr'),p=val('sp');
+  const db=students(),st=db[r];
+  if(!st||await hash(p)!==st.hash)return alert('Wrong roll number or password.');
+  st.lastLogin=new Date().toISOString();save(K.students,db);
+  save(K.session,{role:'student',id:r});render();
+}
+async function adminSetup(){
+  const a=val('ap'),b=val('ap2');
+  if(a.length<8)return alert('Use at least 8 characters.');
+  if(a!==b)return alert('Passwords do not match.');
+  save(K.admin,{user:'SURENDHAR',hash:await hash(a),lastLogin:new Date().toISOString()});
+  save(K.session,{role:'admin'});render();
+}
+async function adminLogin(){
+  const a=load(K.admin);
+  if(await hash(val('ap'))!==a.hash)return alert('Wrong admin password.');
+  a.lastLogin=new Date().toISOString();save(K.admin,a);
+  save(K.session,{role:'admin'});render();
+}
+
+/* ============ AUTO TEST GENERATION ============
+   Takes scenarios from ANY week, each giving 3 or 4 sub-questions,
+   until exactly `total` questions are reached. Returns null if impossible. */
+function buildPaper(total, weeks){
+  // Every student receives a fresh paper generated at test start.
+  const allowed = BANK.filter(s => !weeks || !weeks.length || weeks.includes(s.week));
+  const pool = allowed.map(s => ({...s, questions:[...s.questions].sort(()=>Math.random()-.5)}))
+                      .sort(()=>Math.random()-.5);
+  const paper=[]; let need=total;
+  for(const s of pool){
+    if(need===0) break;
+    const k=Math.min(s.questions.length, need);
+    if(k>0){ paper.push({week:s.week,scenario:s.scenario,text:s.text,questions:s.questions.slice(0,k)}); need-=k; }
+  }
+  return need===0 ? paper : null;
+}
+function maxPossible(){ return bankCount(); }
+function canBuild(total){ return Number.isInteger(total) && total>0 && total<=bankCount(); }
+
+/* ============ ADMIN ============ */
+function adminView(){
+  const tests=load(K.tests)||[],res=load(K.results)||[],db=students(),admin=load(K.admin)||{};
+  const list=Object.entries(db).map(([roll,s])=>({roll,...s})).sort((a,b)=>(b.lastLogin||'').localeCompare(a.lastLogin||''));
+  app.innerHTML=`
+  <div class="card admin-hero"><div class="row" style="align-items:center"><div><h3>⚡ Control Center</h3><p class="muted">Logged in as SURENDHAR · Last login: ${fmt(admin.lastLogin)}</p></div><span class="tag live">ADMIN</span></div>
+    <nav class="menu"><a href="#create">Create test</a><a href="#tests">Manage tests</a><a href="#students">Students</a><a href="#attempts">Attempts</a></nav>
+    <p class="muted">Question bank: ${BANK.length} scenarios · ${bankCount()} questions across Weeks 1–12.</p></div>
+
+  <div class="card" id="create"><h3>Create test</h3>
+    <input id="tt" placeholder="Test title, e.g. Practice Test 1">
+    <div class="row"><input id="td" type="date"><input id="tm" type="time" value="10:00"></div>
+    <div class="row"><input id="tdur" type="number" min="5" value="60" placeholder="Duration (minutes)"><input id="tcnt" type="number" min="1" value="20" placeholder="Number of questions"></div>
+    <p class="muted">Choose weeks to include. Leave all unchecked to include Weeks 1–12.</p>
+    <div class="week-grid">${Array.from({length:12},(_,i)=>`<label class="opt"><input type="checkbox" class="week-pick" value="${i+1}"> Week ${i+1}</label>`).join('')}</div>
+    <button onclick="createTest()">Create test</button></div>
+
+  <div class="card" id="tests"><h3>Manage tests</h3>${tests.length?tests.map(t=>`
+    <div class="row" style="justify-content:space-between;align-items:center;margin:10px 0">
+      <div><b>${esc(t.title)}</b><div class="muted">${fmt(t.start)} · ${t.minutes} min · ${t.count} questions</div></div>
+      <div>${t.launched?'<span class="tag live">Launched</span>':`<button onclick="launch('${t.id}')">Launch</button>`}</div>
+    </div>`).join(''):'<p class="muted">No tests yet.</p>'}</div>
+
+  <div class="card" id="students"><h3>Students (${list.length})</h3>${list.length?`<table>
+    <tr><th>Roll</th><th>Name</th><th>Last login</th><th>Tests</th><th>Average</th></tr>
+    ${list.map(s=>{const mine=res.filter(r=>r.rollno===s.roll);const avg=mine.length?Math.round(mine.reduce((a,r)=>a+(r.percentage??r.score),0)/mine.length):0;
+      return `<tr><td>${esc(s.roll)}</td><td>${esc(s.name)}</td><td>${fmt(s.lastLogin)}</td><td>${mine.length}</td><td>${avg}%</td></tr>`}).join('')}
+    </table>`:'<p class="muted">No students registered yet.</p>'}</div>
+
+  <div class="card" id="attempts"><h3>All attempts</h3>${res.length?`<table>
+    <tr><th>Roll</th><th>Test</th><th>Correct</th><th>Wrong</th><th>Score</th></tr>
+    ${res.map(r=>`<tr><td>${esc(r.rollno)}</td><td>${esc(r.title)}</td><td class="good">${r.correct}</td><td class="bad">${r.wrong}</td><td>${r.score}%</td></tr>`).join('')}
+    </table>`:'<p class="muted">No attempts yet.</p>'}</div>`;
+}
+function createTest(){
+  const title=val('tt'),d=val('td'),t=val('tm'),min=+val('tdur'),cnt=+val('tcnt');
+  const weeks=[...document.querySelectorAll('.week-pick:checked')].map(x=>+x.value);
+  const allowed=BANK.filter(s=>!weeks.length||weeks.includes(s.week)).reduce((n,s)=>n+s.questions.length,0);
+  if(!title||!d||!t||!min||!cnt)return alert('Fill in every field.');
+  if(cnt>allowed)return alert('Selected weeks contain only '+allowed+' questions. Reduce question count or choose more weeks.');
+  const tests=load(K.tests)||[];
+  tests.push({id:'t'+Date.now(),title,start:new Date(d+'T'+t).toISOString(),minutes:min,count:cnt,launched:false,weeks});
+  save(K.tests,tests);alert('Test created. A different randomized paper will be generated for each student.');render();
+}
+function launch(id){
+  const tests=load(K.tests)||[],t=tests.find(x=>x.id===id);
+  t.launched=true;save(K.tests,tests);render();
+}
+
+/* ============ STUDENT DASHBOARD ============ */
+function studentView(id){
+  const st=students()[id];
+  if(!st){localStorage.removeItem(K.session);return render()}
+  const now=Date.now();
+  const tests=(load(K.tests)||[]).filter(t=>t.launched);
+  const res=(load(K.results)||[]).filter(r=>r.rollno===id);
+  const avg=res.length?Math.round(res.reduce((a,r)=>a+(r.percentage??r.score),0)/res.length):0;
+  const best=res.length?Math.max(...res.map(r=>r.percentage??r.score)):0;
+  const cards=tests.map(t=>{
+    const start=new Date(t.start).getTime(),end=start+t.minutes*60000;
+    const status=now<start?'Upcoming':now>end?'Closed':'Open';
+    const done=res.find(r=>r.testId===t.id);
+    const action=done?`<span class="tag">Attended · ${done.score}%</span>`
+      :status==='Open'?`<button onclick="startTest('${t.id}')">Start test</button>`:'';
+    return `<div class="card"><b>${esc(t.title)}</b><span class="tag ${status==='Open'?'live':''}">${status}</span>
+      <div class="muted">${fmt(t.start)} · ${t.minutes} min · ${t.count} questions</div>${action}</div>`;
+  }).join('');
+  app.innerHTML=`
+  <nav class="menu"><b>🎓 Student Dashboard</b><div><button class="ghost" onclick="toggleTheme()">☀ / ☾ Theme</button><button class="ghost" onclick="showMistakes()">Mistake Questions</button></div></nav><div class="card"><b>${esc(st.name)}</b> · Roll ${esc(id)}
+    <div class="muted">Joined ${fmt(st.joined)} · Last login ${fmt(st.lastLogin)}</div>
+    <div class="stats" style="margin-top:12px">
+      <div class="stat"><b>${res.length}</b>Tests attended</div>
+      <div class="stat"><b>${avg}%</b>Average</div>
+      <div class="stat"><b>${best}%</b>Best</div>
+      <div class="stat"><b>${res.reduce((a,r)=>a+r.correct,0)}</b>Correct answers</div>
+    </div></div>
+  <h3>Open tests</h3>${cards||'<p class="muted">No tests are open right now.</p>'}
+  <h3>My marks</h3>${res.length?`<table>
+    <tr><th>Test</th><th>Date</th><th>Correct</th><th>Wrong</th><th>Not answered</th><th>Negative</th><th>Marks</th><th>Percentage</th></tr>
+    ${res.map(r=>`<tr><td>${esc(r.title)}</td><td>${new Date(r.at).toLocaleDateString()}</td><td class="good">${r.correct}</td><td class="bad">${r.wrong}</td><td>${r.unanswered}</td><td>−${(r.negativeMarks||0).toFixed(2)}</td><td>${r.score??r.percentage}</td><td>${r.percentage??r.score}%</td></tr>`).join('')}
+    </table>`:'<p class="muted">You have not attended any test yet.</p>'}`;
+}
+
+/* ============ TEST TAKING ============ */
+function startTest(id){
+  const sess=load(K.session);
+  const t=(load(K.tests)||[]).find(x=>x.id===id);
+  const now=Date.now(),start=new Date(t.start).getTime(),windowEnd=start+t.minutes*60000;
+  if(now<start||now>windowEnd)return alert('This test is not open right now.');
+  if((load(K.results)||[]).some(r=>r.testId===id&&r.rollno===sess.id))return alert('You already attended this test.');
+  const flat=[];
+  // Generate the paper for this student now, not when the admin creates the test.
+  const paper=buildPaper(t.count,t.weeks||[]);
+  if(!paper)return alert('Not enough questions in the selected weeks.');
+  paper.forEach((s,si)=>s.questions.forEach((q,qi)=>flat.push({si,qi})));
+  const deadline=Math.min(now+t.minutes*60000,windowEnd);
+  att={t:{...t,paper},answers:{},flat,deadline,tabWarnings:0,tabLimit:3,confirmed:false};
+  app.innerHTML=`<div class="card"><h3>Before you begin</h3><p>Read and agree to the test rules:</p>
+    <label class="opt"><input type="checkbox" id="agree1"> I will not switch tabs or leave the test window.</label>
+    <label class="opt"><input type="checkbox" id="agree2"> I understand that wrong answers lose 0.50 marks and unanswered questions get 0 marks.</label>
+    <label class="opt"><input type="checkbox" id="agree3"> I understand that repeated tab switches may automatically submit my test.</label>
+    <button onclick="confirmStart()">I agree — Start test</button><button class="ghost" onclick="render()">Cancel</button></div>`;
+}
+function confirmStart(){
+  if(!document.getElementById('agree1').checked||!document.getElementById('agree2').checked||!document.getElementById('agree3').checked)return alert('Please tick all agreement boxes before starting.');
+  att.confirmed=true;viewTest();att.timer=setInterval(tick,1000);
+}
+function viewTest(){
+  const {t}=att;
+  let body='';
+  t.paper.forEach((s,si)=>{
+    body+=`<div class="scn"><span class="muted">Week ${s.week} · ${esc(s.scenario)}</span><br>${esc(s.text)}</div>`;
+    s.questions.forEach((q,qi)=>{
+      const multi=q.answers.length>1,no=att.flat.findIndex(f=>f.si===si&&f.qi===qi)+1;
+      body+=`<div class="card"><b>Q${no}. ${esc(q.q)}</b><p class="muted">${multi?'Select all correct answers.':'Choose one answer.'}</p>${q.options.map((o,oi)=>
+        `<label class="opt"><input type="${multi?'checkbox':'radio'}" name="q${si}_${qi}" onchange="pick(${si},${qi},${oi},${multi})">${esc(o)}</label>`).join('')}</div>`;
+    });
+  });
+  app.innerHTML=`<nav class="menu test-menu"><b>${esc(t.title)}</b><span class="tag live" id="timer">--:--</span><button class="ghost" onclick="toggleTheme()">☀/☾</button></nav>
+    <div class="card"><b>Question navigation</b><div class="nav-questions">${att.flat.map((f,i)=>`<a href="#q${f.si}_${f.qi}">${i+1}</a>`).join('')}</div><p class="muted">Tab switches: <span id="tabCount">0</span> / ${att.tabLimit}</p></div>
+    ${body.replace(/<div class="card"><b>Q(\\d+)\\./g,'<div class="card" id="q$1"><b>Q$1.')}
+    <button onclick="submitTest(false)">Submit test</button>`;
+  tick();
+}
+function handleVisibility(){
+  if(!att||!att.confirmed||document.hidden)return;
+  att.tabWarnings++;
+  const counter=document.getElementById('tabCount');if(counter)counter.textContent=att.tabWarnings;
+  if(att.tabWarnings<att.tabLimit)alert('⚠ Warning '+att.tabWarnings+'/'+att.tabLimit+': Do not switch tabs. Another switch may auto-submit your test.');
+  else {alert('⚠ Tab-switch limit reached. Your test will be submitted automatically.');submitTest(true,'Tab-switch limit reached');}
+}
+document.addEventListener('visibilitychange',handleVisibility);
+window.addEventListener('blur',()=>{ /* visibilitychange is the primary tab-switch signal */ });
+
+function pick(si,qi,oi,multi){
+  const k=si+'_'+qi,cur=att.answers[k]||[];
+  att.answers[k]=multi?(cur.includes(oi)?cur.filter(x=>x!==oi):[...cur,oi]):[oi];
+}
+function tick(){
+  const el=document.getElementById('timer');
+  if(!att)return;
+  if(!el){clearInterval(att.timer);return}
+  const left=Math.max(0,Math.floor((att.deadline-Date.now())/1000));
+  el.textContent=Math.floor(left/60)+':'+String(left%60).padStart(2,'0');
+  if(left===0)submitTest(true);
+}
+function submitTest(auto,reason=''){
+  if(!att)return;
+  clearInterval(att.timer);
+  const {t,answers}=att;
+  let correct=0,wrong=0,unanswered=0;
+  const review=[];
+  t.paper.forEach((s,si)=>s.questions.forEach((q,qi)=>{
+    const given=answers[si+'_'+qi]||[];
+    const same=given.length>0&&given.slice().sort().join(',')===q.answers.slice().sort().join(',');
+    if(given.length===0)unanswered++;else if(same)correct++;else wrong++;
+    review.push({week:s.week,scenario:s.scenario,q:q.q,options:q.options,given,correctAnswers:q.answers,isCorrect:same});
+  }));
+  const total=correct+wrong+unanswered,negative=wrong*0.5;
+  const raw=correct-negative,maxMarks=total,score=Math.max(0,raw);
+  const percentage=maxMarks?Math.round(score/maxMarks*100):0;
+  const sess=load(K.session);
+  const result={testId:t.id,title:t.title,rollno:sess.id,correct,wrong,unanswered,total,negativeMarks:negative,score,percentage,rawScore:raw,maxMarks,at:new Date().toISOString(),auto,reason,review};
+  const res=load(K.results)||[];res.push(result);save(K.results,res);
+  att=null;showResult(result,auto);
+}
+function showResult(r,auto){
+  const detail=(r.review||[]).map((q,i)=>`<div class="card"><b>Q${i+1}. ${esc(q.q)}</b><p class="${q.isCorrect?'good':'bad'}">${q.isCorrect?'✓ Correct':q.given.length?'✗ Wrong':'— Not answered'}</p>
+    <p><b>Your answer:</b> ${q.given.length?q.given.map(n=>esc(q.options[n])).join(', '):'Not answered'}</p>
+    <p><b>Correct answer:</b> ${q.correctAnswers.map(n=>esc(q.options[n])).join(', ')}</p>
+    <p class="muted">Week ${q.week} · ${esc(q.scenario)}</p></div>`).join('');
+  app.innerHTML=`<nav class="menu"><b>📊 Score Card</b><button class="ghost" onclick="render()">Dashboard</button></nav>
+    <div class="card"><h3>${auto?'Auto-submitted. ':''}Test finished: ${esc(r.title)}</h3>${r.reason?`<p class="bad">${esc(r.reason)}</p>`:''}
+      <div class="stats" style="margin-top:12px">
+        <div class="stat"><b class="good">${r.correct}</b>Correct</div><div class="stat"><b class="bad">${r.wrong}</b>Wrong</div>
+        <div class="stat"><b>${r.unanswered}</b>Unanswered</div><div class="stat"><b>${r.score}/${r.maxMarks}</b>Final marks</div>
+        <div class="stat"><b>${r.percentage}%</b>Percentage</div><div class="stat"><b class="bad">−${r.negativeMarks.toFixed(2)}</b>Negative marks</div>
+      </div><p class="muted">Scoring: +1 for correct, −0.50 for wrong, 0 for unanswered. Final score is not allowed below zero.</p>
+      <button onclick="render()">Back to dashboard</button><button class="ghost" onclick="document.getElementById('review').hidden=false">Review answers</button></div>
+    <section id="review" hidden><h3>Answer explanations</h3><p class="muted">The correct option is shown for every question. Coding scenarios include numbered lines in the question stem.</p>${detail}</section>`;
+}
+
+if(load('npp_theme')==='light')document.body.classList.add('light');
+render();
+</script>
+</body>
+</html>
